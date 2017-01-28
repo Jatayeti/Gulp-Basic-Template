@@ -1,0 +1,22 @@
+{
+  "name": "gulpbasic",
+  "version": "1.0.0",
+  "description": "Gulp Basic Template",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JatAYeti",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "6.7.0",
+    "browser-sync": "2.18.6",
+    "del": "^2.2.2",
+    "gulp": "3.9.1",
+    "gulp-cache": "0.4.5",
+    "gulp-jade": "1.1.0",
+    "gulp-postcss": "6.3.0",
+    "gulp-typescript": "3.1.4",
+    "typescript": "2.1.5"
+  }
+}
