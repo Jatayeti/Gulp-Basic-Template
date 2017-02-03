@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var jade = require('gulp-jade');
 var postcss = require('gulp-postcss');
+var concatCss = require('gulp-concat-css');
 var ts = require('gulp-typescript');
 var autoprefixer = require('autoprefixer');
 var browserSync = require('browser-sync').create();
@@ -15,7 +16,8 @@ gulp.task('server', function() {
         server: {
             baseDir: 'build'
         },
-        notify: true
+        notify: true,
+        reloadDelay: 1000
     });
 });
 
@@ -36,6 +38,7 @@ gulp.task('templates', function() {
 gulp.task('styles', function () {
     gulp.src('./app/css/**/*.css')
         .pipe(postcss([ autoprefixer() ]))
+        .pipe(concatCss("app.css"))
         .pipe(gulp.dest('./build/css'));
 });
 
@@ -52,7 +55,7 @@ gulp.task('ts', function () {
 
 gulp.task('js', function () {
     gulp.src('app/scripts/js/**/*.js')
-        
+
         .pipe(gulp.dest('build/js'));
 });
 
@@ -102,10 +105,10 @@ gulp.task('clean', function () {
 gulp.task('watch', ['server', 'templates', 'styles', 'ts', 'js', 'images', 'fonts', 'lib-scripts', 'lib-styles', 'lib-fonts'], function() {
     gulp.watch('./app/img/**/*', ['images']).on("change", reload);
     gulp.watch('./app/fonts/**/*', ['fonts']).on("change", reload);
-    gulp.watch('./app/css/**/*.css', ['styles']).on("change", reload);
-    gulp.watch('./app/**/*.jade', ['templates']).on("change", reload);
-    gulp.watch('./app/scripts/ts/**/*.ts', ['ts']).on("change", reload);
-    gulp.watch('./app/scripts/js/**/*.js', ['js']).on("change", reload);
+    gulp.watch('./app/css/**/*.css', ['templates', 'styles', 'js', 'ts', 'images', 'fonts']).on("change", reload);
+    gulp.watch('./app/**/*.jade', ['templates', 'styles', 'js', 'ts', 'images', 'fonts']).on("change", reload);
+    gulp.watch('./app/scripts/ts/**/*.ts', ['templates', 'styles', 'js', 'ts', 'images', 'fonts']).on("change", reload);
+    gulp.watch('./app/scripts/js/**/*.js', ['templates', 'styles', 'js', 'ts', 'images', 'fonts']).on("change", reload);
     gulp.watch('./app/lib/scripts/**/*.js', ['lib-scripts']).on("change", reload);
     gulp.watch('./app/lib/styles/**/*.css', ['lib-styles']).on("change", reload);
     gulp.watch('./app/lib/fonts/**/*', ['lib-fonts']).on("change", reload);
