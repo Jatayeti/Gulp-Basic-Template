@@ -1,2 +1,2 @@
-# Gulp-Basic-Template
+# Gulp Basic Template
 My Gulp Basic Template
