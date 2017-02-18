@@ -112,14 +112,14 @@ gulp.task('clean', function () {
 
 gulp.task('watch', ['server', 'templates', 'styles', 'ts', 'js', 'images', 'fonts', 'lib-scripts', 'lib-styles', 'lib-fonts'], function () {
   watch('./app/**/*.jade', batch(function (events, done) { gulp.start('templates', done); }));
-  watch('./app/css/**/*.css', batch(function (events, done) { gulp.start('styles', done); }));
-  watch('./app/scripts/ts/**/*.ts', batch(function (events, done) { gulp.start('ts', done); }));
-  watch('./app/scripts/js/**/*.js', batch(function (events, done) { gulp.start('js', done); }));
-  watch('./app/img/**/*', batch(function (events, done) { gulp.start('images', done); }));
-  watch('./app/fonts/**/*', batch(function (events, done) { gulp.start('fonts', done); }));
-  watch('./app/lib/scripts/**/*.js', batch(function (events, done) { gulp.start('lib-scripts', done); }));
-  watch('./app/lib/styles/**/*.css', batch(function (events, done) { gulp.start('lib-styles', done); }));
-  watch('./app/lib/fonts/**/*', batch(function (events, done) { gulp.start('lib-fonts', done); }));
+  watch('./app/assets/css/**/*.css', batch(function (events, done) { gulp.start('styles', done); }));
+  watch('./app/assets/scripts/ts/**/*.ts', batch(function (events, done) { gulp.start('ts', done); }));
+  watch('./app/assets/scripts/js/**/*.js', batch(function (events, done) { gulp.start('js', done); }));
+  watch('./app/assets/img/**/*', batch(function (events, done) { gulp.start('images', done); }));
+  watch('./app/assets/fonts/**/*', batch(function (events, done) { gulp.start('fonts', done); }));
+  watch('./app/assets/vendor/scripts/**/*.js', batch(function (events, done) { gulp.start('lib-scripts', done); }));
+  watch('./app/assets/vendor/styles/**/*.css', batch(function (events, done) { gulp.start('lib-styles', done); }));
+  watch('./app/assets/vendor/fonts/**/*', batch(function (events, done) { gulp.start('lib-fonts', done); }));
 });
 
 
