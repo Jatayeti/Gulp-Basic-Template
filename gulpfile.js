@@ -71,14 +71,14 @@ gulp.task('fonts', function () {
 
 gulp.task('lib-scripts', function () {
   gulp.src('./app/assets/vendor/js/**/*.js')
-    .pipe(gulp.dest('./build/assets/vendor//scripts'))
+    .pipe(gulp.dest('./build/assets/vendor/js'))
     .pipe(browserSync.reload({stream: true}));
 });
 
 
 gulp.task('lib-styles', function () {
   gulp.src('./app/assets/vendor/css/**/*.css')
-    .pipe(gulp.dest('./build/assets/vendor/styles'))
+    .pipe(gulp.dest('./build/assets/vendor/css'))
     .pipe(browserSync.reload({stream: true}));
 });
 
