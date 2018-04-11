@@ -1,117 +1,69 @@
-var gulp = require('gulp');
-var watch = require('gulp-watch');
-var batch = require('gulp-batch');
-var jade = require('gulp-jade');
-var postcss = require('gulp-postcss');
-var concat = require('gulp-concat');
-var concatCss = require('gulp-concat-css');
-var autoprefixer = require('autoprefixer');
-var imagemin = require('gulp-imagemin');
-var browserSync = require('browser-sync').create();
-var reload = browserSync.reload;
-var cache = require('gulp-cache');
-var del = require('del');
+'use strict';
 
+const gulp = require('gulp');
+const sourcemaps = require('gulp-sourcemaps');
+const debug = require('gulp-debug');
+const gulpIf = require('gulp-if');
+const del = require('del');
+const stylus = require('gulp-stylus');
+const concat = require('gulp-concat');
+const pug = require('gulp-pug');
+const imagemin = require('gulp-imagemin');
+const browserSync = require('browser-sync').create();
 
-gulp.task('server', function() {
-    browserSync.init({
-        server: {
-            baseDir: 'build'
-        },
-        notify: false,
-        open: false,
-        reloadDelay: 3000
-    });
+gulp.task('templates', () => {
+  return gulp.src('src/templates/index.pug')
+    .pipe(pug())
+    .pipe(gulp.dest('dist'))
 });
 
+gulp.task('styles', () => {
+  return gulp.src('src/assets/styles/main.styl')
+    .pipe(stylus())
+    .pipe(concat('styles.css'))
+    .pipe(gulp.dest('dist/static/css'))
+});
 
-gulp.task('templates', function() {
-  var YOUR_LOCALS = {};
-  gulp.src(['!./app/layouts/**', './app/**/*.jade'])
-    .pipe(jade({
-        locals: YOUR_LOCALS,
-        pretty: true
+gulp.task('scripts', () => {
+  return gulp.src('src/assets/js/**/*.js')
+    .pipe(concat('bundle.js'))
+    .pipe(gulp.dest('dist/static/js'))
+});
+
+gulp.task('images', () => {
+  return gulp.src('src/assets/img/**/*.*')
+    .pipe(imagemin({
+      progressive: true,
     }))
-    .pipe(gulp.dest('./build'))
-    .pipe(browserSync.reload({stream: true}));
+    .pipe(gulp.dest('dist/static/img'))
 });
 
-
-gulp.task('styles', function () {
-  gulp.src('./app/assets/css/**/*.css')
-    .pipe(postcss([ autoprefixer() ]))
-    .pipe(concatCss("app.css"))
-    .pipe(gulp.dest('./build/assets/css'))
-    .pipe(browserSync.reload({stream: true}));
+gulp.task('fonts', () => {
+  return gulp.src('src/assets/fonts/**/*.*')
+    .pipe(gulp.dest('dist/static/fonts'))
 });
 
-
-gulp.task('scripts', function () {
-  gulp.src('./app/assets/js/**/*.js')
-    .pipe(concat('app.js'))
-    .pipe(gulp.dest('./build/assets/js'))
-    .pipe(browserSync.reload({stream: true}));
+gulp.task('clean', () => {
+  return del('dist')
 });
 
-
-gulp.task('images', function () {
-  gulp.src('./app/assets/img/**/*')
-    .pipe(imagemin())
-    .pipe(gulp.dest('./build/assets/img'))
-    .pipe(browserSync.reload({stream: true}));
+gulp.task('watch', () => {
+  gulp.watch('src/templates/**/*.*', gulp.series('templates'));
+  gulp.watch('src/assets/styles/**/*.*', gulp.series('styles'));
+  gulp.watch('src/assets/js/**/*.*', gulp.series('scripts'));
+  gulp.watch('src/assets/img/**/*.*', gulp.series('images'));
+  gulp.watch('src/assets/fonts/**/*.*', gulp.series('fonts'));
 });
 
+gulp.task('build', gulp.series('clean', gulp.parallel('styles', 'templates', 'scripts', 'images', 'fonts')));
 
-gulp.task('fonts', function () {
-  gulp.src('./app/assets/fonts/**/*')
-    .pipe(gulp.dest('./build/assets/fonts'))
-    .pipe(browserSync.reload({stream: true}));
+gulp.task('server', () => {
+  browserSync.init({
+    server: 'dist',
+    open: false
+  });
+
+  browserSync.watch('src/**/*.*').on('change', browserSync.reload);
 });
 
-
-gulp.task('lib-scripts', function () {
-  gulp.src('./app/assets/vendor/js/**/*.js')
-    .pipe(gulp.dest('./build/assets/vendor/js'))
-    .pipe(browserSync.reload({stream: true}));
-});
-
-
-gulp.task('lib-styles', function () {
-  gulp.src('./app/assets/vendor/css/**/*.css')
-    .pipe(gulp.dest('./build/assets/vendor/css'))
-    .pipe(browserSync.reload({stream: true}));
-});
-
-
-gulp.task('lib-fonts', function () {
-  gulp.src('./app/assets/vendor/fonts/**/*')
-    .pipe(gulp.dest('./build/assets/vendor/fonts'))
-    .pipe(browserSync.reload({stream: true}));
-});
-
-
-gulp.task('delete', function() {
-    del.sync('build'); // Удаляем папку dist перед сборкой
-});
-
-
-gulp.task('clean', function () {
-    cache.clearAll(); // Удаляем Кэш
-});
-
-gulp.task('watch', ['server', 'templates', 'styles', 'scripts', 'images', 'fonts', 'lib-scripts', 'lib-styles', 'lib-fonts'], function () {
-  watch('./app/**/*.jade', batch(function (events, done) { gulp.start('templates', done); }));
-  watch('./app/assets/css/**/*.css', batch(function (events, done) { gulp.start('styles', done); }));
-  watch('./app/assets/js/**/*.js', batch(function (events, done) { gulp.start('scripts', done); }));
-  watch('./app/assets/img/**/*', batch(function (events, done) { gulp.start('images', done); }));
-  watch('./app/assets/fonts/**/*', batch(function (events, done) { gulp.start('fonts', done); }));
-  watch('./app/assets/vendor/js/**/*.js', batch(function (events, done) { gulp.start('lib-scripts', done); }));
-  watch('./app/assets/vendor/css/**/*.css', batch(function (events, done) { gulp.start('lib-styles', done); }));
-  watch('./app/assets/vendor/fonts/**/*', batch(function (events, done) { gulp.start('lib-fonts', done); }));
-});
-
-
-gulp.task('build', ['delete', 'clean', 'watch']);
-
-
-gulp.task('default', ['watch']);
+gulp.task('default', gulp.series('build', gulp.parallel('watch', 'server')));
